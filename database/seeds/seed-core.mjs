@@ -250,10 +250,19 @@ async function main() {
           `asset-${assetIndex}-incident-${incidentIndex}-outcome`,
         );
 
-        const pattern =
-          patterns[(assetIndex + incidentIndex) % patterns.length];
+        const patternIndex = (assetIndex + incidentIndex) % patterns.length;
 
-        const useSuccessfulFix = (assetIndex + incidentIndex) % 4 !== 0;
+        const pattern = patterns[patternIndex];
+
+        // Make repair success/failure independent from failure-pattern selection.
+        // For the 240 memory candidates, each pattern gets:
+        // 45 successful repairs + 15 failed/recurring repairs.
+        const useSuccessfulFix =
+          (assetIndex * 17 +
+            incidentIndex * 29 +
+            Math.floor(assetIndex / 5) * 7) %
+            4 !==
+          0;
 
         const startedAt = isoDaysAgo(30 + assetIndex * 4 + incidentIndex * 17);
 
