@@ -76,8 +76,8 @@ export function createDeterministicExplanation(
       `FIELDfix found ${input.similarCases} comparable historical cases for ${input.rootCause ?? "the probable failure mode"}. ` +
       `${input.successfulCases} were successfully resolved using the recommended approach, with ${input.recurrenceCases} recorded recurrences.`,
 
-    whyThisRepair:
-      `Historical outcome evidence shows a ${input.successRatePct}% success rate and ${input.recurrenceRatePct}% recurrence rate for: ${input.recommendedRepair ?? "the recommended repair"}.`,
+whyThisRepair:
+  `Historical outcome evidence shows a ${input.successRatePct}% success rate and ${input.recurrenceRatePct}% recurrence rate for: ${input.recommendedRepair ?? "the recommended repair"}`,
 
     caution:
       "This is a decision-support recommendation. A qualified supervisor must verify field conditions before repair execution.",
