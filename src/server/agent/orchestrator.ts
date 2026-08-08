@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { createQueryEmbedding } from "./embedding";
+import { resolveRecommendationReasoning } from "./reasoning";
 
 import {
   completeAgentRun,
@@ -232,6 +233,68 @@ export async function runFieldfixAgent(
       )
     );
 
+    const reasoningInput = {
+      incidentTitle: incident.title,
+      symptoms: incident.symptom_text,
+
+      assetCode: asset.asset_code,
+      assetType: asset.asset_type,
+
+      rootCause: best.root_cause,
+      recommendedRepair:
+        best.fix_summary,
+
+      confidence,
+
+      similarCases:
+        Number(best.similar_cases),
+
+      successfulCases:
+        Number(
+          best.successful_cases
+        ),
+
+      recurrenceCases:
+        Number(
+          best.recurrence_cases
+        ),
+
+      successRatePct:
+        best.successRate,
+
+      recurrenceRatePct:
+        best.recurrenceRate,
+
+      lesson:
+        best.representative_lesson,
+    };
+
+    const reasoning =
+      await withAgentToolTrace({
+        agentRunId,
+        orgId,
+        toolName:
+          "explain_recommendation",
+        toolInput: {
+          incidentTitle:
+            reasoningInput.incidentTitle,
+          assetCode:
+            reasoningInput.assetCode,
+          rootCause:
+            reasoningInput.rootCause,
+          recommendedRepair:
+            reasoningInput.recommendedRepair,
+          successRatePct:
+            reasoningInput.successRatePct,
+          recurrenceRatePct:
+            reasoningInput.recurrenceRatePct,
+        },
+        execute: () =>
+          resolveRecommendationReasoning(
+            reasoningInput
+          ),
+      });
+
     const recommendation = {
       version: "fieldfix-agent-v1",
 
@@ -284,6 +347,8 @@ export async function runFieldfixAgent(
         lesson:
           best.representative_lesson,
       },
+
+      reasoning,
 
       alternatives: ranked
         .slice(1, 4)
