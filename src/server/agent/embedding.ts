@@ -35,7 +35,8 @@ async function getExtractor():
   return extractorPromise;
 }
 
-export async function createQueryEmbedding(
+async function createEmbedding(
+  prefix: "query" | "passage",
   text: string
 ): Promise<number[]> {
   const trimmed = text.trim();
@@ -49,7 +50,7 @@ export async function createQueryEmbedding(
   const extractor = await getExtractor();
 
   const output = await extractor(
-    `query: ${trimmed}`,
+    `${prefix}: ${trimmed}`,
     {
       pooling: "mean",
       normalize: true,
@@ -68,4 +69,16 @@ export async function createQueryEmbedding(
   }
 
   return embedding;
+}
+
+export function createQueryEmbedding(
+  text: string
+): Promise<number[]> {
+  return createEmbedding("query", text);
+}
+
+export function createPassageEmbedding(
+  text: string
+): Promise<number[]> {
+  return createEmbedding("passage", text);
 }
